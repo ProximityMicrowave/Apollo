@@ -1,0 +1,10 @@
+## Interface: 60000
+## Title: Apollo: Shaman Module
+## Notes: God of Prophecy.
+## Author: Proximity_Microwave
+## Version: A1
+## SavedVariables:
+## SavedVariablesPerCharacter:
+## RequiredDeps: Apollo
+
+Apollo_Shaman.lua

@@ -1,0 +1,11 @@
+## Interface: 60000
+## Title: Apollo: Paladin Module
+## Notes: God of Prophecy.
+## Author: Proximity_Microwave
+## Version: A1
+## SavedVariables:
+## SavedVariablesPerCharacter:
+## RequiredDeps: Apollo
+## LoadOnDemand: 1
+
+Apollo_Paladin.lua

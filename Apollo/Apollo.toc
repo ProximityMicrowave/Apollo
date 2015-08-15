@@ -1,0 +1,13 @@
+## Interface: 60000
+## Title: Apollo
+## Notes: God of Prophecy.
+## Author: Proximity_Microwave
+## Version: A1
+## SavedVariables:
+## SavedVariablesPerCharacter:
+
+Apollo_Core.lua
+Apollo_healer.lua
+Apollo_keybindings.lua
+Display.xml
+Apollo_Druid.lua
