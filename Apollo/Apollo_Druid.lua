@@ -461,6 +461,8 @@ function AD.Shred()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
+	local _, _, _, _, _, _, _, _, _, _, clearcasting, _, _, _, _, _ = UnitBuff("player","Clearcasting")
+	if (clearcasting == 135700) then energy = 500; end;
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -488,11 +490,13 @@ function AD.Rake()
 	local debuff = UnitDebuff(spellTarget,spellName)
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
+	local _, _, _, _, _, _, _, _, _, _, clearcasting, _, _, _, _, _ = UnitBuff("player","Clearcasting")
+	if (clearcasting == 135700) then energy = 500; end;
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 --	print(buff)
-	
+
 	if (not isDead) 
 	and (canAttack) 
 	and (inRange == 1) 
@@ -519,6 +523,8 @@ function AD.Rip()
 	local cPoints = UnitPower("player",4)
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
+	local _, _, _, _, _, _, _, _, _, _, clearcasting, _, _, _, _, _ = UnitBuff("player","Clearcasting")
+	if (clearcasting == 135700) then energy = 500; end;
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -550,6 +556,8 @@ function AD.FerociousBite()
 	local energy = UnitPower("player",3)
 	local cPoints = UnitPower("player",4)
 	local formName = AD.ShapeshiftForm()
+	local _, _, _, _, _, _, _, _, _, _, clearcasting, _, _, _, _, _ = UnitBuff("player","Clearcasting")
+	if (clearcasting == 135700) then energy = 500; end;
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	

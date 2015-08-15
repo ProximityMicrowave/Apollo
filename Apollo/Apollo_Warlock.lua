@@ -20,7 +20,7 @@ function AW.Periodic()
 				}
 	end
 	
-	if Spec == 3
+	if Spec == 3 then
 		skillList = {
 				AW.AutoAttack,
 				AW.Immolate,

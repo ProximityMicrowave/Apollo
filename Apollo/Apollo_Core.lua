@@ -11,11 +11,6 @@ Apollo_Group = {}
 Apollo_DelayTime = 0							-- DO NOT CHANGE! (STORES THE TIME SINCE LAST PERIODIC UPDATE)
 Apollo_UpdateSeconds = 0.1; 					-- DETERMINES HOW OFTEN PERIODIC EVENTS WILL RUN
 
-ApolloHealer_Below100 = 0
-ApolloHealer_Below75 = 0
-ApolloHealer_Below50 = 0
-ApolloHealer_Below25 = 0
-
 local frame = CreateFrame("FRAME");				-- CREATES A FRAME FOR REGISTERING INGAME EVENTS
 frame:RegisterEvent("ADDON_LOADED");			-- ALLOWS FILTERING FOR THE ADDON_LOADED EVENT
 frame:RegisterEvent("UNIT_HEALTH");				-- ALLOWS FILTERING FOR THE UNIT_HEALTH EVENT
@@ -24,6 +19,7 @@ frame:RegisterEvent("PLAYER_TARGET_CHANGED");	-- ALLOWS FILTERING FOR THE PLAYER
 frame:RegisterEvent("PLAYER_ENTERING_WORLD");	-- ALLOWS FILTERING FOR THE PLAYER_ENTERING_WORLD EVENT
 frame:RegisterEvent("GROUP_ROSTER_UPDATE");		-- ALLOWS FILTERING FOR WHEN THE PLAYERS PARTY CHANGES
 frame:RegisterEvent("PLAYER_REGEN_ENABLED");
+frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 
 
 -- THIS FUNCTION TRIGGERS IN RESPONSE TO ANY INGAME EVENT
@@ -39,7 +35,11 @@ function frame:OnEvent(event, arg1)		-- EVENT REFERS TO THE TRIGGERING EVENT, AR
 		
 	end
 	
-	if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_REGEN_ENABLED" then 
+	if event == "PLAYER_ENTERING_WORLD" 
+	or event == "GROUP_ROSTER_UPDATE" 
+	or event == "PLAYER_REGEN_ENABLED" 
+	or event == "ACTIVE_TALENT_GROUP_CHANGED"
+	then 
 	
 		ApolloHealer_Keybinding()	--CREATES KEYBINDINGS FOR FOCUS TARGETS
 		Apollo.RebindKeys = true;
@@ -70,9 +70,9 @@ function Apollo_OnUpdate(self, elapsed)
 		if IsAddOnLoaded("Apollo_Warrior") then ApolloWarrior_Periodic(); end;
 		if IsAddOnLoaded("Apollo_Paladin") then ApolloPaladin_Periodic(); Apollo_GCSpell = 35395; end;
 		if IsAddOnLoaded("Apollo_Rogue") then ApolloRogue_Periodic(); end;
-		if IsAddOnLoaded("Apollo_Mage") then ApolloMage_Periodic(); Apollo_GCSpell = 5176; end;
+		if IsAddOnLoaded("Apollo_Mage") then ApolloMage_Periodic(); end;
 		if Apollo_classIndex == 9 then Apollo.Warlock.Periodic(); Apollo_GCSpell = 686; end;
-		if Apollo_classIndex == 11 then Apollo.Druid.Periodic(); end;
+		if Apollo_classIndex == 11 then Apollo.Druid.Periodic(); Apollo_GCSpell = 5176;end;
 		if Apollo_classIndex == 7 then Apollo.Shaman.Periodic(); Apollo_GCSpell = 403; end;
 			
 	end
@@ -109,7 +109,7 @@ function Apollo_OnUpdate(self, elapsed)
 	local LowestName, LowestHealth = ApolloHealer_LowestHealth()
 	local DecurseName, DebuffType = ApolloHealer_Decurse()
 	if Apollo_classIndex == 11 then
-		BuffName = ApolloHealer_BuffScan("Rejuvenation","HoT")
+		BuffName = ApolloHealer_BuffScan("Rejuvenation")
 	end
 
 --	local IdealTarget = DecurseName or LowestName

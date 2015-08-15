@@ -135,10 +135,9 @@ function ApolloHealer_Decurse()
 
 end
 
-function ApolloHealer_BuffScan(a,b)
+function ApolloHealer_BuffScan(a)
 
 	local searchBuff = a
-	local typeBuff = b
 	local targetBuff, needBuff
 
 	for i=1,table.getn(Apollo_Group) do
