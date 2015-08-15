@@ -10,4 +10,6 @@ Apollo_Core.lua
 Apollo_healer.lua
 Apollo_keybindings.lua
 Display.xml
+
 Apollo_Druid.lua
+Apollo_Shaman.lua

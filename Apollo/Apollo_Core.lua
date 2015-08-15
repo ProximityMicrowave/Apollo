@@ -37,7 +37,6 @@ function frame:OnEvent(event, arg1)		-- EVENT REFERS TO THE TRIGGERING EVENT, AR
 		if Apollo_classIndex == 2 then loaded,reason = LoadAddOn("Apollo_Paladin"); end;	-- IF THE PLAYER IS A PALADIN; THE PALADIN MODULE WILL BE LOADED.
 		if Apollo_classIndex == 4 then loaded,reason = LoadAddOn("Apollo_Rogue"); end;		-- IF THE PLAYER IS A ROGUE; THE ROGUE MODULE WILL BE LOADED.
 		if Apollo_classIndex == 8 then loaded,reason = LoadAddOn("Apollo_Mage"); end;		-- IF THE PLAYER IS A ROGUE; THE ROGUE MODULE WILL BE LOADED.
---		if Apollo_classIndex == 11 then loaded,reason = LoadAddOn("Apollo_Druid"); end;		-- IF THE PLAYER IS A DRUID; THE DRUID MODULE WILL BE LOADED.
 		
 	end
 	
@@ -90,7 +89,6 @@ function Apollo_OnUpdate(self, elapsed)
 		if IsAddOnLoaded("Apollo_Paladin") then ApolloPaladin_Periodic(); Apollo_GCSpell = 35395; end;
 		if IsAddOnLoaded("Apollo_Rogue") then ApolloRogue_Periodic(); end;
 		if IsAddOnLoaded("Apollo_Mage") then ApolloMage_Periodic(); end;
---		if IsAddOnLoaded("Apollo_Druid") then ApolloDruid_Periodic(); Apollo_GCSpell = 5176; end;
 		if Apollo_classIndex == 11 then Apollo.Druid.Periodic(); end;
 		if Apollo_classIndex == 7 then Apollo.Shaman.Periodic(); Apollo_GCSpell = 403; end;
 			
@@ -100,8 +98,6 @@ function Apollo_OnUpdate(self, elapsed)
 	if IsAddOnLoaded("Apollo_Paladin") then ApolloPaladin_OnUpdate(); end;
 	if IsAddOnLoaded("Apollo_Rogue") then ApolloRogue_OnUpdate(); end;
 	if IsAddOnLoaded("Apollo_Mage") then ApolloMage_OnUpdate(); end;
---	if IsAddOnLoaded("Apollo_Druid") then ApolloDruid_OnUpdate(); end;
---	if Apollo_classIndex == 7 then ApolloDruid_OnUpdate(); end;
 	
 	local r = 0
 	local g = 0
