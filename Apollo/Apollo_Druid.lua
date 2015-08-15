@@ -25,6 +25,23 @@ function AD.Periodic()
 				}
 	end
 	
+	if Spec == 2 then
+		SkillList = {
+				AD.AutoAttack,		--Any Form
+				AD.Wrath,			--Humanoid
+				AD.Moonfire,		--Humanoid
+				AD.HealingTouch,	--Cat/Humanoid
+				AD.Rejuvenation,	--Cat/Humanoid
+				AD.Shred,			--Cat Form
+				AD.Rake,			--Cat Form
+				AD.FerociousBite,	--Cat Form
+				AD.Rip,				--Cat Form
+				AD.Mangle,			--Bear Form
+				AD.Rebirth,			--Any Form
+--				AD.HealthPotion,
+				}
+	end
+	
 	if Spec == 4 then 
 			SkillList = {
 				AD.AutoAttack,
@@ -143,12 +160,23 @@ function AD.Rejuvenation()
 	local buff = UnitBuff(spellTarget,spellName)
 	local formName = AD.ShapeshiftForm()
 	local healthPct = AD.UnitHealthPct(spellTarget)
+	local enhRejv = IsUsableSpell("Enhanced Rejuvenation")
 	
 	AD.CreateButtons(__func__, spellName, spellTarget)
 	
-	if (not isDead) and (inRange == 1) and (not buff) and (healthPct < 1) and (formName == "Humanoid") then
-		spellCast = true
-	end
+	if (not isDead) 
+	and (inRange == 1) 
+	and (not buff) 
+	and (healthPct < 1) 
+	and (formName == "Humanoid") 
+	then spellCast = true; end;
+	
+	if (not isDead) 
+	and (inRange == 1) 
+	and (not buff) 
+	and (healthPct < 1) 
+	and (enhRejv) 
+	then spellCast = true; end;
 	
 	return spellCast, spellName, spellTarget
 
@@ -233,11 +261,17 @@ function AD.HealingTouch()
 
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
+	local buff = UnitBuff(spellTarget,"Predatory Swiftness")
 	local formName = AD.ShapeshiftForm()
 	local healthPct = AD.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
 	
 	AD.CreateButtons(__func__, spellName, spellTarget)
+	
+	if (buff)
+	and (not isDead)
+	and (inRange == 1)
+	then spellCast = true; end;
 	
 	if (not isDead) 
 	and (inRange == 1) 
@@ -441,6 +475,68 @@ function AD.Shred()
 	
 end
 
+function AD.Rake()
+	local __func__ = "Apollo.Druid.Rake"
+	
+	local spellCast = false
+	local spellName = "Rake"
+	local spellTarget = "target"
+	
+	local canAttack = UnitCanAttack("player",spellTarget)
+	local isDead = UnitIsDead(spellTarget)
+	local inRange = IsSpellInRange(spellName,spellTarget)
+	local debuff = UnitDebuff(spellTarget,spellName)
+	local energy = UnitPower("player",3)
+	local formName = AD.ShapeshiftForm()
+	
+	AD.CreateButtons(__func__, spellName, spellTarget)
+	
+--	print(buff)
+	
+	if (not isDead) 
+	and (canAttack) 
+	and (inRange == 1) 
+	and (formName == "Cat Form") 
+	and (not debuff)
+	and (energy > 60) 
+	then spellCast = true; end;
+
+	return spellCast, spellName, spellTarget
+	
+end
+
+function AD.Rip()
+	local __func__ = "Apollo.Druid.Rip"
+	
+	local spellCast = false
+	local spellName = "Rip"
+	local spellTarget = "target"
+	
+	local canAttack = UnitCanAttack("player",spellTarget)
+	local isDead = UnitIsDead(spellTarget)
+	local inRange = IsSpellInRange(spellName,spellTarget)
+	local debuff = UnitDebuff(spellTarget,spellName)
+	local cPoints = UnitPower("player",4)
+	local energy = UnitPower("player",3)
+	local formName = AD.ShapeshiftForm()
+	
+	AD.CreateButtons(__func__, spellName, spellTarget)
+	
+--	print(buff)
+	
+	if (not isDead) 
+	and (canAttack) 
+	and (inRange == 1) 
+	and (formName == "Cat Form") 
+	and (not debuff)
+	and (energy > 30)
+	and (cPoints == 5)
+	then spellCast = true; end;
+
+	return spellCast, spellName, spellTarget
+	
+end
+
 function AD.FerociousBite()
 	local __func__ = "Apollo.Druid.FerociousBite"
 	
@@ -461,7 +557,7 @@ function AD.FerociousBite()
 	and (canAttack) 
 	and (inRange == 1) 
 	and (formName == "Cat Form") 
-	and (energy > 25) 
+	and (energy > 30) 
 	and (cPoints == 5)
 	then spellCast = true; end;
 
