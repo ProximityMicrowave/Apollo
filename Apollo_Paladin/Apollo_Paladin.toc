@@ -1,4 +1,4 @@
-## Interface: 60000
+## Interface: 60200
 ## Title: Apollo: Paladin Module
 ## Notes: God of Prophecy.
 ## Author: Proximity_Microwave
