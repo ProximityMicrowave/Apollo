@@ -92,7 +92,7 @@ function AD.AutoAttack()
 	local isDead = UnitIsDead(spellTarget)
 	local inRange = IsSpellInRange("Shred",spellTarget) or 1
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (inRange == 1) and (canAttack) and (not isDead) and (not isCurrent) then
 		spellCast = true
@@ -114,7 +114,7 @@ function AD.Wrath()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (inRange == 1) and (canAttack) and (not isDead) and (formName == "Humanoid")then
 		spellCast = true
@@ -138,7 +138,7 @@ function AD.Moonfire()
 	local debuff = UnitDebuff(spellTarget,spellName)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (inRange == 1) and (canAttack) and (not isDead) and (startTime == 0) and (not debuff) and (formName == "Humanoid") then
 		spellCast = true
@@ -159,10 +159,10 @@ function AD.Rejuvenation()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local buff = UnitBuff(spellTarget,spellName)
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local enhRejv = IsUsableSpell("Enhanced Rejuvenation")
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
 	and (inRange == 1) 
@@ -193,10 +193,10 @@ function AD.Swiftmend()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local buff = UnitBuff(spellTarget,"Rejuvenation")
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) and (inRange == 1) and (buff) and (healthPct < .75) and (startTime == 0) and (formName == "Humanoid") then
 		spellCast = true
@@ -215,7 +215,7 @@ function AD.Regrowth()
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
 	local glyphFound = false
 	for _,v in pairs(AD.glyphSocket) do
@@ -225,7 +225,7 @@ function AD.Regrowth()
 		end
 	end
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (glyphFound == true) 
 	and (not isDead) 
@@ -263,10 +263,10 @@ function AD.HealingTouch()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local buff = UnitBuff(spellTarget,"Predatory Swiftness")
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (buff)
 	and (not isDead)
@@ -294,9 +294,9 @@ function AD.Lifebloom()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local buff = UnitBuff(spellTarget,spellName)
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) and (inRange == 1) and (not buff) and (inCombat) and (formName == "Humanoid") then
 		spellCast = true
@@ -316,7 +316,7 @@ function AD.NaturesSwiftness()
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) and (startTime == 0) then
 		spellCast = true
@@ -337,10 +337,10 @@ function AD.Ironbark()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local inCombat = InCombatLockdown()
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
 	and (inRange == 1) 
@@ -365,10 +365,10 @@ function AD.Rebirth()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local inCombat = InCombatLockdown()
 	local formName = AD.ShapeshiftForm()
-	local healthPct = AD.UnitHealthPct(spellTarget)
+	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (isDead) 
 	and (inRange == 1) 
@@ -391,7 +391,7 @@ function AD.Tranquility()
 	local formName = AD.ShapeshiftForm()
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) and (ApolloHealer_Below75 >= 3) and (startTime == 0) and (formName == "Humanoid") then
 		spellCast = true
@@ -413,7 +413,7 @@ function AD.WildGrowth()
 	local formName = AD.ShapeshiftForm()
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) and (inRange == 1) and (ApolloHealer_Below75 >= 3) and (startTime == 0) and (formName == "Humanoid") then
 		spellCast = true
@@ -436,7 +436,7 @@ function AD.NaturesCure()
 	local debuffFound = AD.DebuffScan(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead)
 	and (startTime == 0)
@@ -462,7 +462,7 @@ function AD.Shred()
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
 	and (canAttack) 
@@ -489,7 +489,7 @@ function AD.Rake()
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 --	print(buff)
 	
@@ -520,7 +520,7 @@ function AD.Rip()
 	local energy = UnitPower("player",3)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 --	print(buff)
 	
@@ -551,7 +551,7 @@ function AD.FerociousBite()
 	local cPoints = UnitPower("player",4)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
 	and (canAttack) 
@@ -578,7 +578,7 @@ function AD.Mangle()
 	local startTime = GetSpellCooldown(spellName)
 	local formName = AD.ShapeshiftForm()
 	
-	AD.CreateButtons(__func__, spellName, spellTarget)
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
 	and (canAttack) 
@@ -600,7 +600,7 @@ function AD.HealthPotion()
 	
 	local inCombat = InCombatLockdown()
 	local isDead = UnitIsDeadOrGhost("player")
-	local healthPct = AD.UnitHealthPct("player")
+	local healthPct = Apollo.UnitHealthPct("player")
 	local startTime = GetItemCooldown(itemID)
 	
 	AD.CreateItemButton(__func__, itemID, itemTarget)
@@ -627,7 +627,7 @@ end
 
 
 -- ================================================================================ --
-function AD.CreateButtons(a, b, c)
+function Apollo.CreateSkillButtons(a, b, c)
 
 	local btnName, spellName, spellTarget = a .. "btn", b, c
 	
@@ -654,16 +654,6 @@ function AD.CreateItemButton(a, b, c)
 		_G[btnName]:SetAttribute("macrotext", "/use [@"..itemTarget.."] item:"..itemID)
 	end
 	
-end
-
-function AD.UnitHealthPct(a)
-
-	local health = UnitHealth(a)
-	local healthMax = UnitHealthMax(a)
-	local incomingHealth = UnitGetIncomingHeals(a) or 0
-	local healthPct = (health + incomingHealth) / healthMax
-	
-	return healthPct
 end
 
 function AD.ShapeshiftForm()

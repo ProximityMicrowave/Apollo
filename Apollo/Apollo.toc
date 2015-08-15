@@ -13,3 +13,4 @@ Display.xml
 
 Apollo_Druid.lua
 Apollo_Shaman.lua
+Apollo_Warlock.lua

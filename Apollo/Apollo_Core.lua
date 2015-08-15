@@ -1,4 +1,3 @@
-FallingDuration = 0
 Apollo = {}
 Apollo.Diagnostic = {}
 
@@ -54,26 +53,9 @@ end
 -- This function triggers every frame.
 function Apollo_OnUpdate(self, elapsed)
 
-	if ApolloTest2 ~= ApolloTest1 then print(ApolloTest2.." => "..ApolloTest1); end;
-
 	Apollo_InCombat = InCombatLockdown()
 	
 	local Apollo_CurrentTime = GetTime()
-
-	FallingThen = FallingNow
-	FallingNow = IsFalling()
-	
-	if FallingNow == true and FallingThen == false then
-		FallingStart = Apollo_CurrentTime
-	end
-	
-	if FallingNow == false then
-		FallingDuration = 0;
-	end
-	
-	if FallingNow == true and FallingThen == true then
-			FallingDuration = Apollo_CurrentTime - FallingStart;
-	end
 	
 	-- These Scripts run every 0.2 Seconds.
 	if (Apollo_CurrentTime >= Apollo_DelayTime) then Apollo_DelayTime = (Apollo_CurrentTime + Apollo_UpdateSeconds)
@@ -88,7 +70,8 @@ function Apollo_OnUpdate(self, elapsed)
 		if IsAddOnLoaded("Apollo_Warrior") then ApolloWarrior_Periodic(); end;
 		if IsAddOnLoaded("Apollo_Paladin") then ApolloPaladin_Periodic(); Apollo_GCSpell = 35395; end;
 		if IsAddOnLoaded("Apollo_Rogue") then ApolloRogue_Periodic(); end;
-		if IsAddOnLoaded("Apollo_Mage") then ApolloMage_Periodic(); end;
+		if IsAddOnLoaded("Apollo_Mage") then ApolloMage_Periodic(); Apollo_GCSpell = 5176; end;
+		if Apollo_classIndex == 9 then Apollo.Warlock.Periodic(); Apollo_GCSpell = 686; end;
 		if Apollo_classIndex == 11 then Apollo.Druid.Periodic(); end;
 		if Apollo_classIndex == 7 then Apollo.Shaman.Periodic(); Apollo_GCSpell = 403; end;
 			
@@ -176,6 +159,32 @@ function ApolloTest()
 	
 	end
 
+end
+
+function Apollo.UnitHealthPct(a)
+
+	local health = UnitHealth(a)
+	local healthMax = UnitHealthMax(a)
+	local incomingHealth = UnitGetIncomingHeals(a) or 0
+	local healthPct = (health + incomingHealth) / healthMax
+	
+	return healthPct
+end
+
+function Apollo.CreateSkillButtons(a, b, c)
+
+	local btnName, spellName, spellTarget = a .. "btn", b, c
+	
+--	print(btnName,string.gsub(spellName,"%p",""))
+
+	if not InCombatLockdown() then
+		if _G[btnName] == nil then _G[btnName] = CreateFrame("Button", string.gsub(spellName,"%p",""), UIParent, "SecureActionButtonTemplate"); end;
+		_G[btnName]:SetAttribute("type", "macro");
+		_G[btnName]:SetAttribute("macrotext", "/use [@"..spellTarget.."] "..spellName)
+	end
+	
+--	print("/use [@"..spellTarget.."] "..spellName)
+	
 end
 
 frame:SetScript("OnEvent", frame.OnEvent);
