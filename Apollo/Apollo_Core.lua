@@ -1,5 +1,9 @@
 Apollo = {}
 Apollo.Diagnostic = {}
+ApolloHealer_Below100 = 0
+ApolloHealer_Below75 = 0
+ApolloHealer_Below50 = 0
+ApolloHealer_Below25 = 0
 
 
 --== GLOBAL DECLARATIONS ==--

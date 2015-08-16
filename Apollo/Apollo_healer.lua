@@ -144,7 +144,7 @@ function ApolloHealer_BuffScan(a)
 	
 		local needBuff = UnitBuff(Apollo_Group[i], searchBuff)
 		local health = UnitHealth(Apollo_Group[i]) / UnitHealthMax(Apollo_Group[i])
-		local inRange = IsSpellInRange(searchBuff)
+		local inRange = IsSpellInRange(searchBuff,Apollo_Group[i])
 	
 		if (not needBuff) and (health < 1 and inRange == 1) then
 			return Apollo_Group[i]

@@ -261,7 +261,7 @@ function AD.HealingTouch()
 
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
-	local buff = UnitBuff(spellTarget,"Predatory Swiftness")
+	local buff = UnitBuff("player","Predatory Swiftness")
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
