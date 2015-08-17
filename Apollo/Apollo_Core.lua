@@ -121,9 +121,8 @@ function Apollo_OnUpdate(self, elapsed)
 	if DecurseName then IdealTarget = DecurseName;
 	elseif (ApolloHealer_Below75 == 0 and BuffName) then IdealTarget = BuffName;
 	else IdealTarget = LowestName; end;
-
 	
-	if UnitIsUnit("focus",IdealTarget) == false then
+	if UnitIsUnit("focus",IdealTarget) == false and (Apollo_classIndex ~= 9)then
 		for i = 1,Apollo_Group.GroupNum do
 			local Offset = 0
 			if Apollo_GroupType == "party" then Offset = -1; end;
