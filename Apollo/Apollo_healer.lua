@@ -45,6 +45,7 @@ function AH.GetTank()
 end
 
 function ApolloHealer_LowestHealth()
+	if Apollo_classIndex == 9 then return "player",1
 
 	if ApolloHealer_TANK == nil then ApolloHealer_TANK = "player"; end;
 	ApolloHealer_Below100 = 0
