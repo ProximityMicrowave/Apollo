@@ -1,5 +1,6 @@
 Apollo.Warlock = {}
 local AW = Apollo.Warlock
+AW.ImmolateTick = 0
 
 function AW.Periodic()
 	Apollo.Diagnostic.TimerStart = GetTime()
@@ -20,22 +21,21 @@ function AW.Periodic()
 				}
 	end
 	
-	if Spec == 3 then
-		skillList = {
-				AW.AutoAttack,
-				AW.Immolate,
+	if GetSpecialization() == 3 then
+		SkillList = {
+--				AW.AutoAttack,
+				AW.ShadowBolt,
+				AW.Corruption,
 				AW.Conflagrate,
 				AW.Shadowburn,
 				AW.ChaosBolt,
-				AW.Incinerate,
-		}
+				}
 	end
-	
+--	print(table.getn(SkillList))
 	for i = 1,table.getn(SkillList) do
 	
-		if not SkillList[i] then break; end;
+--		if not SkillList[i] then break; end;
 		Apollo_Ability.Cast[i], Apollo_Ability.SpellName[i], Apollo_Ability.Type[i] = SkillList[i]()
-		
 		if (not InCombatLockdown()) and Apollo.RebindKeys then
 			SetBinding(Apollo_Ability.KeyBinding[i])
 			SetBindingClick(Apollo_Ability.KeyBinding[i], string.gsub(Apollo_Ability.SpellName[i],"%p",""))
@@ -91,7 +91,7 @@ function AW.ShadowBolt()
 	return spellCast, spellName, spellTarget
 end
 
-function AW.Corruption()
+function Apollo.Warlock.Corruption()
 	local __func__ = "Apollo.Warlock.Corruption"
 
 	local spellCast = false
@@ -101,7 +101,7 @@ function AW.Corruption()
 	local canAttack = UnitCanAttack("player",spellTarget)
 	local isDead = UnitIsDead(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
-	local debuff = UnitDebuff(spellTarget,spellName)
+	local debuff = UnitDebuff(spellTarget,"Corruption") or UnitDebuff(spellTarget,"Immolate")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -109,52 +109,7 @@ function AW.Corruption()
 	and (canAttack) 
 	and (not isDead) 
 	and (not debuff) 
-	then spellCast = true; end;
-	
-	return spellCast, spellName, spellTarget
-end
-
-function AW.Corruption()
-	local __func__ = "Apollo.Warlock.Corruption"
-
-	local spellCast = false
-	local spellName = "Corruption"
-	local spellTarget = "target"
-
-	local canAttack = UnitCanAttack("player",spellTarget)
-	local isDead = UnitIsDead(spellTarget)
-	local inRange = IsSpellInRange(spellName,spellTarget)
-	local debuff = UnitDebuff(spellTarget,spellName)
-	
-	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
-	
-	if (inRange == 1) 
-	and (canAttack) 
-	and (not isDead) 
-	and (not debuff) 
-	then spellCast = true; end;
-	
-	return spellCast, spellName, spellTarget
-end
-
-function AW.Immolate()
-	local __func__ = "Apollo.Warlock.Immolate"
-
-	local spellCast = false
-	local spellName = "Immolate"
-	local spellTarget = "target"
-
-	local canAttack = UnitCanAttack("player",spellTarget)
-	local isDead = UnitIsDead(spellTarget)
-	local inRange = IsSpellInRange(spellName,spellTarget)
-	local debuff = UnitDebuff(spellTarget,spellName)
-	
-	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
-	
-	if (inRange == 1) 
-	and (canAttack) 
-	and (not isDead) 
-	and (not debuff) 
+	and (AW.ImmolateTick + 3 < time())
 	then spellCast = true; end;
 	
 	return spellCast, spellName, spellTarget
@@ -201,9 +156,9 @@ function AW.Shadowburn()
 	if (inRange == 1) 
 	and (canAttack) 
 	and (not isDead) 
-	and (burningEmbers >= 10)
+	and (burningEmbers >= 1)
 	and (healthPct < .2)
-	then spellCast = true; end;
+	then spellCast = true; print("SHADOWBURN!"); end;
 	
 	return spellCast, spellName, spellTarget
 end
@@ -219,35 +174,43 @@ function AW.ChaosBolt()
 	local isDead = UnitIsDead(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local burningEmbers = UnitPower("player",14)
+	local casting = UnitCastingInfo("player")
+	if casting == "Chaos Bolt" then burningEmbers = burningEmbers - 1; end;
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (inRange == 1) 
 	and (canAttack) 
 	and (not isDead) 
-	and (burningEmbers >= 20)
+	and (burningEmbers >= 2)
 	then spellCast = true; end;
 	
 	return spellCast, spellName, spellTarget
 end
 
-function AW.Incinerate()
-	local __func__ = "Apollo.Warlock.Incinerate"
 
-	local spellCast = false
-	local spellName = "Incinerate"
-	local spellTarget = "target"
 
-	local canAttack = UnitCanAttack("player",spellTarget)
-	local isDead = UnitIsDead(spellTarget)
-	local inRange = IsSpellInRange(spellName,spellTarget)
+
+
+
+
+local frame = CreateFrame("FRAME");
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+frame:SetScript("OnEvent", function(self, event, ...)
+
+	local timestamp, type, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, 
+		destGUID, destName, destFlags, destRaidFlags = ...
+
+	if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+		if (type == "SPELL_CAST_START") then
+
+			local spellId, spellName, spellSchool, amount,
+			overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
+
+			if (spellName == "Immolate") then
+				AW.ImmolateTick = time()
+			end
+		end
+	end
 	
-	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
-	
-	if (inRange == 1) 
-	and (canAttack) 
-	and (not isDead) 
-	then spellCast = true; end;
-	
-	return spellCast, spellName, spellTarget
-end
+end);

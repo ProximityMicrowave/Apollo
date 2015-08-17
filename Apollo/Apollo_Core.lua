@@ -13,7 +13,7 @@ Apollo_Ability.Cast = {}						-- ARRAY CONTAINING WHICH ABILITIES SHOULD BE CAST
 Apollo_Ability.Type = {}
 Apollo_Group = {}
 Apollo_DelayTime = 0							-- DO NOT CHANGE! (STORES THE TIME SINCE LAST PERIODIC UPDATE)
-Apollo_UpdateSeconds = 0.1; 					-- DETERMINES HOW OFTEN PERIODIC EVENTS WILL RUN
+Apollo_UpdateSeconds = 0.2; 					-- DETERMINES HOW OFTEN PERIODIC EVENTS WILL RUN
 
 local frame = CreateFrame("FRAME");				-- CREATES A FRAME FOR REGISTERING INGAME EVENTS
 frame:RegisterEvent("ADDON_LOADED");			-- ALLOWS FILTERING FOR THE ADDON_LOADED EVENT
@@ -49,8 +49,7 @@ function frame:OnEvent(event, arg1)		-- EVENT REFERS TO THE TRIGGERING EVENT, AR
 		Apollo.RebindKeys = true;
 		
 	end
-	
-	
+
 
 end
 
@@ -90,15 +89,15 @@ function Apollo_OnUpdate(self, elapsed)
 	local g = 0
 	local b = 0
 	
-	if 
-		ChatFrame1EditBox:IsVisible() == true or
-		UnitCastingInfo("player") ~= nil or
-		UnitChannelInfo("player") ~= nil or
-		GetSpellCooldown(Apollo_GCSpell) ~= 0
-	then
-		ColorDot:SetTexture(r,g,b,1);
-		return; 
-	end;
+--	if 
+--		ChatFrame1EditBox:IsVisible() == true or
+--		UnitCastingInfo("player") ~= nil or
+--		UnitChannelInfo("player") ~= nil or
+--		GetSpellCooldown(Apollo_GCSpell) ~= 0
+--	then
+--		ColorDot:SetTexture(r,g,b,1);
+--		return; 
+--	end;
 		
 	for i = 1,80 do
 --		if Apollo_Ability.Cast[i] == nil then break; end;
@@ -122,7 +121,7 @@ function Apollo_OnUpdate(self, elapsed)
 	elseif (ApolloHealer_Below75 == 0 and BuffName) then IdealTarget = BuffName;
 	else IdealTarget = LowestName; end;
 	
-	if UnitIsUnit("focus",IdealTarget) == false and (Apollo_classIndex ~= 9)then
+	if UnitIsUnit("focus",IdealTarget) == false then
 		for i = 1,Apollo_Group.GroupNum do
 			local Offset = 0
 			if Apollo_GroupType == "party" then Offset = -1; end;
@@ -137,6 +136,7 @@ function Apollo_OnUpdate(self, elapsed)
 		end
 	end
 	
+--	print(r,g,b,1)
 	ColorDot:SetTexture(r,g,b,1);
 	
 end
@@ -165,6 +165,7 @@ function ApolloTest()
 end
 
 function Apollo.UnitHealthPct(a)
+	if (not UnitExists(a)) then return 1; end;
 
 	local health = UnitHealth(a)
 	local healthMax = UnitHealthMax(a)
@@ -188,6 +189,12 @@ function Apollo.CreateSkillButtons(a, b, c)
 	
 --	print("/use [@"..spellTarget.."] "..spellName)
 	
+end
+
+function Apollo.TestFunction()
+
+	print("This is a test")
+
 end
 
 frame:SetScript("OnEvent", frame.OnEvent);
