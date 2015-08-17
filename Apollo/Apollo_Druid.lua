@@ -1,6 +1,7 @@
 Apollo.Druid = {}
 
 local AD = Apollo.Druid
+AD.WildMushroomTick = 0
 
 function AD.Periodic()
 	Apollo.Diagnostic.TimerStart = GetTime()
@@ -46,6 +47,7 @@ function AD.Periodic()
 			SkillList = {
 				AD.AutoAttack,
 				AD.Wrath,			--Humanoid
+				AD.WildMushroom,
 				AD.HealingTouch,	--Humanoid
 				AD.Regrowth,		--Humanoid
 				AD.Rejuvenation,	--Humanoid
@@ -116,9 +118,12 @@ function AD.Wrath()
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
-	if (inRange == 1) and (canAttack) and (not isDead) and (formName == "Humanoid")then
-		spellCast = true
-	end
+	if (inRange == 1) 
+	and (canAttack) 
+	and (not isDead) 
+	and (ApolloHealer_Below75 == 0)
+	and (formName == "Humanoid")
+	then spellCast = true; end;
 	
 	return spellCast, spellName, spellTarget
 	
@@ -215,6 +220,8 @@ function AD.Regrowth()
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local formName = AD.ShapeshiftForm()
+	local globalcooldown = GetSpellCooldown("Wrath")
+	local buff = UnitBuff("player","Clearcasting")
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
 	local glyphFound = false
@@ -230,13 +237,24 @@ function AD.Regrowth()
 	if (glyphFound == true) 
 	and (not isDead) 
 	and (inRange == 1) 
+	and (globalcooldown == 0)
 	and (healthPct < .75) 
+	and (formName == "Humanoid") 
+	then spellCast = true; end;
+	
+	if (glyphFound == true) 
+	and (not isDead) 
+	and (inRange == 1) 
+	and (globalcooldown == 0)
+	and (buff)
+	and (healthPct < 1) 
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
 	if (level < 26) 
 	and (not isDead) 
 	and (inRange == 1) 
+	and (globalcooldown == 0)
 	and (healthPct < .75) 
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
@@ -244,6 +262,7 @@ function AD.Regrowth()
 	if (level >= 26) 
 	and (not isDead) 
 	and (inRange == 1) 
+	and (globalcooldown == 0)
 	and (healthPct < .5) 
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
@@ -264,6 +283,7 @@ function AD.HealingTouch()
 	local buff = UnitBuff("player","Predatory Swiftness")
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
+	local globalcooldown = GetSpellCooldown("Wrath")
 	local level = UnitLevel("player")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
@@ -271,10 +291,12 @@ function AD.HealingTouch()
 	if (buff)
 	and (not isDead)
 	and (inRange == 1)
+	and (globalcooldown == 0)
 	then spellCast = true; end;
 	
 	if (not isDead) 
 	and (inRange == 1) 
+	and (globalcooldown == 0)
 	and (healthPct < .75) 
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
@@ -421,6 +443,31 @@ function AD.WildGrowth()
 	
 	return spellCast, spellName, spellTarget
 	
+end
+
+function AD.WildMushroom()
+	local __func__ = "Apollo.Druid.WildMushroom"
+	
+	local spellCast = false
+	local spellName = "Wild Mushroom"
+	local spellTarget = Apollo.Healer.GetTank() or "player"
+
+	local isDead = UnitIsDeadOrGhost(spellTarget)
+	local inRange = IsSpellInRange(spellName,spellTarget)
+	local formName = AD.ShapeshiftForm()
+	local haveTotem = GetTotemInfo(1)
+	local inCombat = InCombatLockdown()
+	
+	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
+	
+	if (not isDead) 
+	and (inCombat)
+	and (inRange == 1)
+	and (formName == "Humanoid")
+	and ((AD.WildMushroomTick + 3 < time()) or (not haveTotem))
+	then spellCast = true; end;
+	
+	return spellCast, spellName, spellTarget
 end
 
 function AD.NaturesCure()
@@ -671,6 +718,7 @@ function AD.ShapeshiftForm()
 	if (nStance == 0) or (nStance == 4) then formName = "Humanoid"
 	else _,formName = GetShapeshiftFormInfo(nStance); end;
 	
+	if formName == "Claws of Shirvallah" then formName = "Cat Form"; end;
 	return formName
 	
 end
@@ -692,3 +740,44 @@ function AD.DebuffScan(a)
 	return debuffFound
 	
 end
+
+local frame = CreateFrame("FRAME");
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+frame:SetScript("OnEvent", function(self, event, ...)
+
+  local timestamp, type, hideCaster,
+    sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
+
+  --[[
+    * Note, for this example, you could just use 'local type = select(2, ...)'.  The others are included
+      so that it's clear what's available.
+    * You can also lump all of the arguments into one block (or one really long line):
+
+    local timestamp, type, hideCaster,                                                                      -- arg1  to arg3
+      sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags,   -- arg4  to arg11
+      spellId, spellName, spellSchool,                                                                      -- arg12 to arg14
+      amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...             -- arg15 to arg23
+  ]]
+--	print(type)
+  if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+    if (type == "SPELL_HEAL") then
+
+      local spellId, spellName, spellSchool, amount,
+        overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
+
+      if (spellName == "Wild Mushroom") then
+        AD.WildMushroomTick = time()
+      end
+    end
+	
+	if (type == "SPELL_AURA_APPLIED") then
+
+	local spellId, spellName, spellSchool, amount, 
+	overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
+
+	if (spellName == "Wild Mushroom") then
+        AD.WildMushroomTick = time()
+      end
+	end
+  end
+end);
