@@ -163,20 +163,25 @@ function AD.Rejuvenation()
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local buff = UnitBuff(spellTarget,spellName)
+	local clearcasting = UnitBuff("player","Clearcasting")
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local enhRejv = IsUsableSpell("Enhanced Rejuvenation")
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
+	and (not clearcasting)
 	and (inRange == 1) 
 	and (not buff) 
 	and (healthPct < 1) 
+	and (not noMana)
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
 	if (not isDead) 
+	and (not clearcasting)
 	and (inRange == 1) 
 	and (not buff) 
 	and (healthPct < 1) 
@@ -200,12 +205,18 @@ function AD.Swiftmend()
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
-	if (not isDead) and (inRange == 1) and (buff) and (healthPct < .75) and (startTime == 0) and (formName == "Humanoid") then
-		spellCast = true
-	end
+	if (not isDead) 
+	and (inRange == 1) 
+	and (buff) 
+	and (healthPct < .75) 
+	and (startTime == 0) 
+	and (not noMana)
+	and (formName == "Humanoid") 
+	then spellCast = true; end;
 	
 	return spellCast, spellName, spellTarget
 end
@@ -217,20 +228,25 @@ function AD.Regrowth()
 	local spellName = "Regrowth"
 	local spellTarget = "focus"
 
+	local name, _, _, castTime, minRange, maxRange = GetSpellInfo(spellName)
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local formName = AD.ShapeshiftForm()
 	local globalcooldown = GetSpellCooldown("Wrath")
-	local buff = UnitBuff("player","Clearcasting")
+	local buff,_,_,_,_,_,buffExpires = UnitBuff("player","Clearcasting")
+--	print((buffExpires or 0) - GetTime())
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local level = UnitLevel("player")
 	local glyphFound = false
+	local _,noMana = IsUsableSpell("Wild Growth")
 	for _,v in pairs(AD.glyphSocket) do
 		if v == 116218 then
 			glyphFound = true
 			break
 		end
 	end
+	
+	
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -239,6 +255,7 @@ function AD.Regrowth()
 	and (inRange == 1) 
 	and (globalcooldown == 0)
 	and (healthPct < .75) 
+	and (not noMana)
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
@@ -264,6 +281,7 @@ function AD.Regrowth()
 	and (inRange == 1) 
 	and (globalcooldown == 0)
 	and (healthPct < .5) 
+	and (not noMana)
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
@@ -285,6 +303,7 @@ function AD.HealingTouch()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local globalcooldown = GetSpellCooldown("Wrath")
 	local level = UnitLevel("player")
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -298,6 +317,7 @@ function AD.HealingTouch()
 	and (inRange == 1) 
 	and (globalcooldown == 0)
 	and (healthPct < .75) 
+	and (not noMana)
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
@@ -317,10 +337,16 @@ function AD.Lifebloom()
 	local buff = UnitBuff(spellTarget,spellName)
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
-	if (not isDead) and (inRange == 1) and (not buff) and (inCombat) and (formName == "Humanoid") then
+	if (not isDead) 
+	and (inRange == 1) 
+	and (not buff) 
+	and (not noMana)
+	and (inCombat) 
+	and (formName == "Humanoid") then
 		spellCast = true
 	end
 	
@@ -361,6 +387,7 @@ function AD.Ironbark()
 	local formName = AD.ShapeshiftForm()
 	local healthPct = Apollo.UnitHealthPct(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
@@ -369,6 +396,7 @@ function AD.Ironbark()
 	and (inCombat) 
 	and (healthPct < .75) 
 	and (startTime == 0) 
+	and (not noMana)
 	and (formName == "Humanoid") 
 	then spellCast = true; end;
 	
@@ -408,15 +436,21 @@ function AD.Tranquility()
 	local spellCast = false
 	local spellName = "Tranquility"
 	local spellTarget = "none"
-
+	
+	local inCombat = InCombatLockdown()
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local formName = AD.ShapeshiftForm()
 	local startTime = GetSpellCooldown(spellName)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
-	if (not isDead) and (ApolloHealer_Below75 >= 3) and (startTime == 0) and (formName == "Humanoid") then
-		spellCast = true
+	if (not isDead) 
+	and (inCombat)
+	and (not noMana)
+	and (ApolloHealer_Below75 >= 3) 
+	and (startTime == 0) 
+	and (formName == "Humanoid") then spellCast = true
 	end
 	
 	return spellCast, spellName, spellTarget
@@ -434,10 +468,16 @@ function AD.WildGrowth()
 	local inRange = IsSpellInRange(spellName,spellTarget)
 	local formName = AD.ShapeshiftForm()
 	local startTime = GetSpellCooldown(spellName)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
-	if (not isDead) and (inRange == 1) and (ApolloHealer_Below75 >= 3) and (startTime == 0) and (formName == "Humanoid") then
+	if (not isDead) 
+	and (inRange == 1) 
+	and (ApolloHealer_Below75 >= 3) 
+	and (startTime == 0) 
+	and (not noMana)
+	and (formName == "Humanoid") then
 		spellCast = true
 	end
 	
@@ -454,14 +494,18 @@ function AD.WildMushroom()
 
 	local isDead = UnitIsDeadOrGhost(spellTarget)
 	local inRange = IsSpellInRange(spellName,spellTarget)
+	local bossHealth = UnitHealth("Boss1")
 	local formName = AD.ShapeshiftForm()
 	local haveTotem = GetTotemInfo(1)
 	local inCombat = InCombatLockdown()
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead) 
+	and (bossHealth > 0)
 	and (inCombat)
+	and (not noMana)
 	and (inRange == 1)
 	and (formName == "Humanoid")
 	and ((AD.WildMushroomTick + 3 < time()) or (not haveTotem))
@@ -482,10 +526,12 @@ function AD.NaturesCure()
 	local formName = AD.ShapeshiftForm()
 	local debuffFound = AD.DebuffScan(spellTarget)
 	local startTime = GetSpellCooldown(spellName)
+	local _,noMana = IsUsableSpell("Wild Growth")
 	
 	Apollo.CreateSkillButtons(__func__, spellName, spellTarget)
 	
 	if (not isDead)
+	and (not noMana)
 	and (startTime == 0)
 	and (inRange == 1)
 	and (formName == "Humanoid")
@@ -748,36 +794,43 @@ frame:SetScript("OnEvent", function(self, event, ...)
   local timestamp, type, hideCaster,
     sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
 
-  --[[
-    * Note, for this example, you could just use 'local type = select(2, ...)'.  The others are included
-      so that it's clear what's available.
-    * You can also lump all of the arguments into one block (or one really long line):
+	if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
 
-    local timestamp, type, hideCaster,                                                                      -- arg1  to arg3
-      sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags,   -- arg4  to arg11
-      spellId, spellName, spellSchool,                                                                      -- arg12 to arg14
-      amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...             -- arg15 to arg23
-  ]]
---	print(type)
-  if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
-    if (type == "SPELL_HEAL") then
+		if (type == "SPELL_HEAL") then
 
-      local spellId, spellName, spellSchool, amount,
-        overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
+			local spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
 
-      if (spellName == "Wild Mushroom") then
-        AD.WildMushroomTick = time()
-      end
-    end
+			if (spellName == "Wild Mushroom") then
+				AD.WildMushroomTick = time()
+			end
+		end
 	
-	if (type == "SPELL_AURA_APPLIED") then
+		if (type == "SPELL_AURA_APPLIED") then
 
-	local spellId, spellName, spellSchool, amount, 
-	overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
+			local spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12, ...)
 
-	if (spellName == "Wild Mushroom") then
-        AD.WildMushroomTick = time()
-      end
+			if (spellName == "Wild Mushroom") then
+				AD.WildMushroomTick = time()
+			end
+		end
+		
+		if (type == "SPELL_CAST_FAILED") then
+			local failedSpell,_,failedType = select(13, ...)
+			if failedType == "Target not in line of sight" then 
+				local failedFocus = UnitName("focus")
+				AD.ApplyBlacklist(failedSpell,failedFocus)
+			end
+		end
+		
 	end
-  end
 end);
+
+function AD.ApplyBlacklist(a, b)
+	local failedSpell, failedFocus = a, b;
+	if failedSpell ~= "Wrath" then
+		table.insert(Apollo.Blacklist.Name, 1,failedFocus)
+		table.insert(Apollo.Blacklist.Time, 1,time()+3)
+--		print(Apollo.Blacklist.Name[1])
+	end
+
+end

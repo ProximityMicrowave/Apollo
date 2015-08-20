@@ -1,10 +1,12 @@
 Apollo = {}
+Apollo.Blacklist = {}
+Apollo.Blacklist.Name = {}
+Apollo.Blacklist.Time = {}
 Apollo.Diagnostic = {}
 ApolloHealer_Below100 = 0
 ApolloHealer_Below75 = 0
 ApolloHealer_Below50 = 0
 ApolloHealer_Below25 = 0
-
 
 --== GLOBAL DECLARATIONS ==--
 Apollo_Ability = {}								-- ARRAY CONTAINING ALL RELEVANT ABILITY DATA
@@ -13,7 +15,7 @@ Apollo_Ability.Cast = {}						-- ARRAY CONTAINING WHICH ABILITIES SHOULD BE CAST
 Apollo_Ability.Type = {}
 Apollo_Group = {}
 Apollo_DelayTime = 0							-- DO NOT CHANGE! (STORES THE TIME SINCE LAST PERIODIC UPDATE)
-Apollo_UpdateSeconds = 0.2; 					-- DETERMINES HOW OFTEN PERIODIC EVENTS WILL RUN
+Apollo_UpdateSeconds = 0.1; 					-- DETERMINES HOW OFTEN PERIODIC EVENTS WILL RUN
 
 local frame = CreateFrame("FRAME");				-- CREATES A FRAME FOR REGISTERING INGAME EVENTS
 frame:RegisterEvent("ADDON_LOADED");			-- ALLOWS FILTERING FOR THE ADDON_LOADED EVENT
@@ -45,11 +47,14 @@ function frame:OnEvent(event, arg1)		-- EVENT REFERS TO THE TRIGGERING EVENT, AR
 	or event == "ACTIVE_TALENT_GROUP_CHANGED"
 	then 
 	
-		ApolloHealer_Keybinding()	--CREATES KEYBINDINGS FOR FOCUS TARGETS
-		Apollo.RebindKeys = true;
+		if not InCombatLockdown() then
+			ApolloHealer_Keybinding()	--CREATES KEYBINDINGS FOR FOCUS TARGETS
+			Apollo.RebindKeys = true;
+		end
 		
 	end
-
+	
+	
 
 end
 
@@ -62,7 +67,7 @@ function Apollo_OnUpdate(self, elapsed)
 	
 	-- These Scripts run every 0.2 Seconds.
 	if (Apollo_CurrentTime >= Apollo_DelayTime) then Apollo_DelayTime = (Apollo_CurrentTime + Apollo_UpdateSeconds)
-	
+		
 		-- STORES PARTY MEMBER DESIGNATIONS AND IDENTIFIES GROUP TANK.
 --		for i = 0,4 do
 --			if i == 0 then Apollo_Group[i] = "player" else Apollo_Group[i] = "party"..i; end;
@@ -77,7 +82,8 @@ function Apollo_OnUpdate(self, elapsed)
 		if Apollo_classIndex == 9 then Apollo.Warlock.Periodic(); Apollo_GCSpell = 686; end;
 		if Apollo_classIndex == 11 then Apollo.Druid.Periodic(); Apollo_GCSpell = 5176;end;
 		if Apollo_classIndex == 7 then Apollo.Shaman.Periodic(); Apollo_GCSpell = 403; end;
-			
+		
+		
 	end
 
 	if IsAddOnLoaded("Apollo_Warrior") then ApolloWarrior_OnUpdate(); end;
@@ -89,15 +95,15 @@ function Apollo_OnUpdate(self, elapsed)
 	local g = 0
 	local b = 0
 	
---	if 
---		ChatFrame1EditBox:IsVisible() == true or
---		UnitCastingInfo("player") ~= nil or
---		UnitChannelInfo("player") ~= nil or
---		GetSpellCooldown(Apollo_GCSpell) ~= 0
---	then
---		ColorDot:SetTexture(r,g,b,1);
---		return; 
---	end;
+	if 
+		ChatFrame1EditBox:IsVisible() == true or
+		UnitCastingInfo("player") ~= nil or
+		UnitChannelInfo("player") ~= nil or
+		GetSpellCooldown(Apollo_GCSpell) ~= 0
+	then
+		ColorDot:SetTexture(r,g,b,1);
+		return; 
+	end;
 		
 	for i = 1,80 do
 --		if Apollo_Ability.Cast[i] == nil then break; end;
@@ -121,7 +127,7 @@ function Apollo_OnUpdate(self, elapsed)
 	elseif (ApolloHealer_Below75 == 0 and BuffName) then IdealTarget = BuffName;
 	else IdealTarget = LowestName; end;
 	
-	if UnitIsUnit("focus",IdealTarget) == false then
+	if UnitIsUnit("focus",IdealTarget) == false and (Apollo_classIndex ~= 9)then
 		for i = 1,Apollo_Group.GroupNum do
 			local Offset = 0
 			if Apollo_GroupType == "party" then Offset = -1; end;
@@ -136,7 +142,6 @@ function Apollo_OnUpdate(self, elapsed)
 		end
 	end
 	
---	print(r,g,b,1)
 	ColorDot:SetTexture(r,g,b,1);
 	
 end
@@ -154,18 +159,7 @@ function Apollo_AOEToggle()
 
 end
 
-function ApolloTest()
-
-	for i = 1, #Apollo_Group do
-	
-		print(Apollo_Group[i])
-	
-	end
-
-end
-
 function Apollo.UnitHealthPct(a)
-	if (not UnitExists(a)) then return 1; end;
 
 	local health = UnitHealth(a)
 	local healthMax = UnitHealthMax(a)
@@ -189,12 +183,6 @@ function Apollo.CreateSkillButtons(a, b, c)
 	
 --	print("/use [@"..spellTarget.."] "..spellName)
 	
-end
-
-function Apollo.TestFunction()
-
-	print("This is a test")
-
 end
 
 frame:SetScript("OnEvent", frame.OnEvent);

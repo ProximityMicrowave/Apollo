@@ -45,7 +45,21 @@ function AH.GetTank()
 end
 
 function ApolloHealer_LowestHealth()
+--	for i = 1, table.getn(Apollo.Blacklist.Name) do
+--		if Apollo.Blacklist.Time[i] <= time() then
+--			table.remove(Apollo.Blacklist.Name, i)
+--			table.remove(Apollo.Blacklist.Time, i)
+--		end
+--	end
 
+	for i,v in ipairs(Apollo.Blacklist.Time) do
+		if v <= time() then
+			print(i,v)
+			table.remove(Apollo.Blacklist.Name, i)
+			table.remove(Apollo.Blacklist.Time, i)
+		end
+	end
+	
 	if ApolloHealer_TANK == nil then ApolloHealer_TANK = "player"; end;
 	ApolloHealer_Below100 = 0
 	ApolloHealer_Below75 = 0
@@ -64,7 +78,14 @@ function ApolloHealer_LowestHealth()
 		if Apollo_classIndex == 7 then inRangeSpell = "Healing Surge"; end;
 		if Apollo_classIndex == 11 then inRangeSpell = "Rejuvenation"; end;
 		inRange = IsSpellInRange(inRangeSpell,Apollo_Group[i])
-			
+		
+		for _,v in pairs(Apollo.Blacklist.Name) do
+			if v == UnitName(Apollo_Group[i]) then
+				inRange = 0
+--				print("Found blacklist target")
+			end
+		end
+		
 		local IncomingHeal = UnitGetIncomingHeals(Apollo_Group[i]) or 0;
 		local CurHealth = UnitHealth(Apollo_Group[i])
 		local MaxHealth = UnitHealthMax(Apollo_Group[i])
@@ -103,6 +124,12 @@ function ApolloHealer_Decurse()
 
 	for i = 1,Apollo_Group.GroupNum do
 		local inRange = IsSpellInRange(CleanseSpell,Apollo_Group[i])
+		for _,v in pairs(Apollo.Blacklist.Name) do
+			if v == UnitName(Apollo_Group[i]) then
+				inRange = 0
+--				print("Found blacklist target")
+			end
+		end
 	
 		if inRange == 1 then for j = 1,40 do
 			
@@ -145,6 +172,13 @@ function ApolloHealer_BuffScan(a)
 		local needBuff = UnitBuff(Apollo_Group[i], searchBuff)
 		local health = UnitHealth(Apollo_Group[i]) / UnitHealthMax(Apollo_Group[i])
 		local inRange = IsSpellInRange(searchBuff,Apollo_Group[i])
+		
+		for _,v in pairs(Apollo.Blacklist.Name) do
+			if v == UnitName(Apollo_Group[i]) then
+				inRange = 0
+--				print("Found blacklist target")
+			end
+		end
 	
 		if (not needBuff) and (health < 1 and inRange == 1) then
 			return Apollo_Group[i]
